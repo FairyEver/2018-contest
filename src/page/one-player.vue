@@ -1,5 +1,5 @@
 <template>
-  <div class="game-page">
+  <div class="page">
     <div class="game-box">
       <game></game>
     </div>
@@ -15,11 +15,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.game-page {
+.page {
   height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: cadetblue;
   .game-box {
     height: 400px;
     width: 300px;

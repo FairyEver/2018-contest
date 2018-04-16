@@ -1,0 +1,92 @@
+// 整体布局北京色
+$colorBg: #F9F9EF;
+// 顶部右侧 分数 和 最高分显示
+$colorTitleText: #F7E7DC;
+$colorTitleTextBg: #BEAEA3;
+$colorTitleNumber: #FFF;
+// 左上角
+$colorLogoBg: #EDC33F;
+$colorLogoText: #FFF;
+// 顶部按钮颜色
+$colorTitleBtnBg: #E19A6B;
+$colorTitleBtnText: #FFF;
+// 棋盘
+$boardBg: #BBADA2;
+
+// 顶栏高度
+$heightTitleGroup: 80px;
+
+.game {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  &.theme-default {
+    padding: 10px;
+    border-radius: 4px;
+    background-color: $colorBg;
+    box-shadow: 0 30px 30px 0 rgba(0,0,0,0.04),
+                0 1px 2px 0 rgba(0,0,0,0.05),
+                0 5px 10px 0 rgba(0,0,0,0.10);
+    display: flex;
+    flex-direction: column;
+  }
+  // 顶部
+  .title {
+    flex-grow: 0;
+    display: flex;
+    flex-direction: row;
+    height: $heightTitleGroup;
+    .col {
+      flex-grow: 1;
+      align-items: stretch;
+      &.logo {
+        width: $heightTitleGroup;
+        flex-grow: 0;
+        background-color: $colorLogoBg;
+        color: $colorLogoText;
+        border-radius: 4px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      &.btn-group {
+        margin-left: 10px;
+        display: flex;
+        flex-direction: column;
+        .text {
+          flex-grow: 1;
+          color: $colorTitleText;
+          background-color: $colorTitleTextBg;
+          font-size: 20px;
+          margin-bottom: 10px;
+          border-radius: 4px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        .btn {
+          height: 30px;
+          color: $colorTitleBtnText;
+          background-color: $colorTitleBtnBg;
+          border-radius: 4px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+      }
+    }
+  }
+  // 棋盘容器
+  // 这不是棋盘
+  .main {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .board {
+      width: 100%;
+      border-radius: 4px;
+      background-color: $boardBg;
+    }
+  }
+}
