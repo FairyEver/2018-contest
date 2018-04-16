@@ -7,8 +7,8 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'index',
-      component: resolve => { require(['@/page/index.vue'], resolve) }
+      name: 'one-player',
+      component: resolve => { require(['@/page/one-player.vue'], resolve) }
     }
   ]
 })
