@@ -116,6 +116,10 @@ $footerIconColorHover: #BEAEA3;
             position: absolute;
             border-radius: 2px;
             transition: all .3s;
+            font-size: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
           }
         }
       }
