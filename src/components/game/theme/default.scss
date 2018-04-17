@@ -15,7 +15,14 @@ $boardBg: #BBADA2;
 $boardBgCellBg: #CDBFB7;
 
 // 顶栏高度
-$heightTitleGroup: 80px;
+$heightTitleGroup: 90px;
+
+// footer
+$heightFooter: 20px;
+$footerIconSize: 20px;
+$footerIconColor: #F7E7DC;
+$footerIconColorActive: #E19A6B;
+$footerIconColorHover: #BEAEA3;
 
 .game {
   height: 100%;
@@ -101,7 +108,28 @@ $heightTitleGroup: 80px;
           .cell {
             position: absolute;
             background-color: $boardBgCellBg;
-            border-radius: 4px;
+            border-radius: 2px;
+          }
+        }
+      }
+    }
+  }
+  .footer {
+    height: $heightFooter;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .icon-group {
+      font-size: $footerIconSize;
+      color: $footerIconColor;
+      i {
+        &:hover {
+          color: $footerIconColorHover;
+        }
+        &.active {
+          color: $footerIconColorActive;
+          &:hover {
+            color: $footerIconColorActive;
           }
         }
       }

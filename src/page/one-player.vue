@@ -22,7 +22,7 @@ export default {
   align-items: center;
   background-color: cadetblue;
   .game-box {
-    height: 400px;
+    height: 500px;
     width: 300px;
   }
 }

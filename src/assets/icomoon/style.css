@@ -1,0 +1,74 @@
+@font-face {
+  font-family: 'icomoon';
+  src:  url('fonts/icomoon.eot?nvh5cb');
+  src:  url('fonts/icomoon.eot?nvh5cb#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?nvh5cb') format('truetype'),
+    url('fonts/icomoon.woff?nvh5cb') format('woff'),
+    url('fonts/icomoon.svg?nvh5cb#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icomoon' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-stopwatch:before {
+  content: "\e952";
+}
+.icon-equalizer2:before {
+  content: "\e993";
+}
+.icon-download3:before {
+  content: "\e9c7";
+}
+.icon-smile:before {
+  content: "\e9e1";
+}
+.icon-cool:before {
+  content: "\e9eb";
+}
+.icon-evil:before {
+  content: "\e9ef";
+}
+.icon-sleepy:before {
+  content: "\e9fd";
+}
+.icon-crying:before {
+  content: "\ea01";
+}
+.icon-point-right:before {
+  content: "\ea04";
+}
+.icon-play3:before {
+  content: "\ea1c";
+}
+.icon-loop2:before {
+  content: "\ea2e";
+}
+.icon-circle-up:before {
+  content: "\ea41";
+}
+.icon-circle-right:before {
+  content: "\ea42";
+}
+.icon-circle-down:before {
+  content: "\ea43";
+}
+.icon-circle-left:before {
+  content: "\ea44";
+}
+.icon-github:before {
+  content: "\eab0";
+}
