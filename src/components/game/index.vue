@@ -29,7 +29,9 @@
             v-for="item in cells"
             :key="item.id"
             :style="cellStyle(cellRowCol(item.cell), item.level)">
-            {{item.id}}
+            <template v-if="currentLevelSetting[item.level].text">
+              {{currentLevelSetting[item.level].text}}
+            </template>
           </div>
         </div>
       </div>
