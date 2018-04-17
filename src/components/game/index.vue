@@ -19,7 +19,7 @@
             class="cell"
             v-for="item in Math.pow(currentCellNum, 2)"
             :key="item"
-            :style="cellStyle(cellRowCol(item))">
+            :style="bgCellStyle(cellRowCol(item))">
           </div>
         </div>
         <!-- 游戏层 -->
@@ -28,7 +28,7 @@
             class="cell"
             v-for="item in cells"
             :key="item.id"
-            :style="cellStyle(cellRowCol(item.cell))">
+            :style="cellStyle(cellRowCol(item.cell), item.level)">
             {{item.id}}
           </div>
         </div>
@@ -174,13 +174,23 @@ export default {
         y: parseInt((index - 1) / this.currentCellNum)
       }
     },
-    // 输入 x和y 返回这个位置的样式
-    cellStyle ({x, y}) {
+    // [背景层cell] 输入 x和y 返回这个位置的样式
+    bgCellStyle ({x, y}) {
       return {
         width: `${this.cellWidth}px`,
         height: `${this.cellWidth}px`,
         left: `${this.currentCellMargin + x * (this.cellWidth + this.currentCellMargin)}px`,
         top: `${this.currentCellMargin + y * (this.cellWidth + this.currentCellMargin)}px`
+      }
+    },
+    // [游戏层cell] 输入 x和y 返回这个位置的样式
+    cellStyle ({x, y}, level) {
+      return {
+        width: `${this.cellWidth}px`,
+        height: `${this.cellWidth}px`,
+        left: `${this.currentCellMargin + x * (this.cellWidth + this.currentCellMargin)}px`,
+        top: `${this.currentCellMargin + y * (this.cellWidth + this.currentCellMargin)}px`,
+        backgroundColor: this.currentLevelSetting[level].bg
       }
     },
     // 生成一个方块
@@ -191,7 +201,7 @@ export default {
         // 唯一ID
         id: 0,
         // 等级
-        level: 1
+        level: 0
       })
     },
     // [上] 不管是触摸 还是按键 还是点击 最后触发的都是这里的方法
