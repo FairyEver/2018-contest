@@ -12,6 +12,7 @@ $colorTitleBtnBg: #E19A6B;
 $colorTitleBtnText: #FFF;
 // 棋盘
 $boardBg: #BBADA2;
+$boardBgCellBg: #CDBFB7;
 
 // 顶栏高度
 $heightTitleGroup: 80px;
@@ -20,6 +21,8 @@ $heightTitleGroup: 80px;
   height: 100%;
   display: flex;
   flex-direction: column;
+  user-select: none;
+  cursor: pointer;
   &.theme-default {
     padding: 10px;
     border-radius: 4px;
@@ -63,6 +66,7 @@ $heightTitleGroup: 80px;
           display: flex;
           justify-content: center;
           align-items: center;
+          font-weight: bold;
         }
         .btn {
           height: 30px;
@@ -88,6 +92,19 @@ $heightTitleGroup: 80px;
       width: 100%;
       border-radius: 4px;
       background-color: $boardBg;
+      position: relative;
+      .layer {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        &.bg {
+          .cell {
+            position: absolute;
+            background-color: $boardBgCellBg;
+            border-radius: 4px;
+          }
+        }
+      }
     }
   }
 }
