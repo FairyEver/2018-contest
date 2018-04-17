@@ -111,9 +111,16 @@ $footerIconColorHover: #BEAEA3;
             border-radius: 2px;
           }
         }
+        &.game {
+          .cell {
+            position: absolute;
+            border-radius: 2px;
+          }
+        }
       }
     }
   }
+  // 底部
   .footer {
     height: $heightFooter;
     display: flex;

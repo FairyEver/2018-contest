@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "hotkeys-js": "^3.2.0",
+    "lodash.clonedeep": "^4.5.0",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1"
   },
