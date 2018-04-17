@@ -29,6 +29,7 @@
             v-for="item in cells"
             :key="item.id"
             :style="cellStyle(cellRowCol(item.cell), item.level)">
+            <!-- 方块内是文字 -->
             <template v-if="currentLevelSetting[item.level].text">
               {{currentLevelSetting[item.level].text}}
             </template>
