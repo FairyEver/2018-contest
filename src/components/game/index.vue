@@ -186,8 +186,11 @@ export default {
     // 生成一个方块
     newCell () {
       this.cells.push({
+        // 位置
         cell: 2,
+        // 唯一ID
         id: 0,
+        // 等级
         level: 1
       })
     },

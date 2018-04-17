@@ -115,6 +115,7 @@ $footerIconColorHover: #BEAEA3;
           .cell {
             position: absolute;
             border-radius: 2px;
+            transition: all .3s;
           }
         }
       }
