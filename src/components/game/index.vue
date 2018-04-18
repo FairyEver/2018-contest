@@ -41,10 +41,10 @@
     </div>
     <div class="footer">
       <div class="icon-group">
-        <i class="icon-circle-up" :class="{active: isPressUp}" @click="pressUp"></i>
-        <i class="icon-circle-down" :class="{active: isPressDown}" @click="pressDown"></i>
-        <i class="icon-circle-left" :class="{active: isPressLeft}" @click="pressLeft"></i>
-        <i class="icon-circle-right" :class="{active: isPressRight}" @click="pressRight"></i>
+        <i class="icon-circle-up" :class="{active: isUp}" @click="handlerUp"></i>
+        <i class="icon-circle-down" :class="{active: isDown}" @click="handlerDown"></i>
+        <i class="icon-circle-left" :class="{active: isLeft}" @click="handlerLeft"></i>
+        <i class="icon-circle-right" :class="{active: isRight}" @click="handlerRight"></i>
       </div>
     </div>
   </div>
@@ -94,10 +94,10 @@ export default {
       // [mounted后取值] 棋盘尺寸
       boardWidth: 0,
       // 记录刚才用户的输入
-      isPressUp: false,
-      isPressDown: false,
-      isPressLeft: false,
-      isPressRight: false,
+      isUp: false,
+      isDown: false,
+      isLeft: false,
+      isRight: false,
       // game 层的方块
       cells: [],
       // 记录产生了多少个cell
@@ -143,19 +143,19 @@ export default {
     keyRegister () {
       hotkeys(this.keyUp, event => {
         event.preventDefault()
-        this.pressUp()
+        this.handlerUp()
       })
       hotkeys(this.keyDown, event => {
         event.preventDefault()
-        this.pressDown()
+        this.handlerDown()
       })
       hotkeys(this.keyLeft, event => {
         event.preventDefault()
-        this.pressLeft()
+        this.handlerLeft()
       })
       hotkeys(this.keyRight, event => {
         event.preventDefault()
-        this.pressRight()
+        this.handlerRight()
       })
     },
     // 输入 index 输出 这个index对应的x和y
@@ -310,68 +310,60 @@ export default {
       })
     },
     // [上] 不管是触摸 还是按键 还是点击 最后触发的都是这里的方法
-    pressUp () {
-      this.logKey('pressUp')
+    handlerUp () {
+      this.logKey('handlerUp')
       // 点亮下面的指示灯 并隔一段时间后熄灭
-      this.isPressUp = true
+      this.isUp = true
       setTimeout(() => {
-        this.isPressUp = false
+        this.isUp = false
       }, 100)
       this.canMoveUp()
         .then(() => {
           console.log('can')
         })
-        .catch(err => {
-          console.warn(err)
-        })
+        .catch(err => console.warn(err))
     },
     // [下] 不管是触摸 还是按键 还是点击 最后触发的都是这里的方法
-    pressDown () {
-      this.logKey('pressDown')
+    handlerDown () {
+      this.logKey('handlerDown')
       // 点亮下面的指示灯 并隔一段时间后熄灭
-      this.isPressDown = true
+      this.isDown = true
       setTimeout(() => {
-        this.isPressDown = false
+        this.isDown = false
       }, 100)
       this.canMoveDown()
         .then(() => {
           console.log('can')
         })
-        .catch(err => {
-          console.warn(err)
-        })
+        .catch(err => console.warn(err))
     },
     // [左] 不管是触摸 还是按键 还是点击 最后触发的都是这里的方法
-    pressLeft () {
-      this.logKey('pressLeft')
+    handlerLeft () {
+      this.logKey('handlerLeft')
       // 点亮下面的指示灯 并隔一段时间后熄灭
-      this.isPressLeft = true
+      this.isLeft = true
       setTimeout(() => {
-        this.isPressLeft = false
+        this.isLeft = false
       }, 100)
       this.canMoveLeft()
         .then(() => {
           console.log('can')
         })
-        .catch(err => {
-          console.warn(err)
-        })
+        .catch(err => console.warn(err))
     },
     // [右] 不管是触摸 还是按键 还是点击 最后触发的都是这里的方法
-    pressRight () {
-      this.logKey('pressRight')
+    handlerRight () {
+      this.logKey('handlerRight')
       // 点亮下面的指示灯 并隔一段时间后熄灭
-      this.isPressRight = true
+      this.isRight = true
       setTimeout(() => {
-        this.isPressRight = false
+        this.isRight = false
       }, 100)
       this.canMoveRight()
         .then(() => {
           console.log('can')
         })
-        .catch(err => {
-          console.warn(err)
-        })
+        .catch(err => console.warn(err))
     },
     // [调试] 打印一个黑色的块 主要是用来显示进行了哪种操作
     logKey (text) {
