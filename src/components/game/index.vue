@@ -17,7 +17,7 @@
         <div class="layer bg">
           <div
             class="cell"
-            v-for="item in Math.pow(currentCellNum, 2)"
+            v-for="item in Math.pow(cellNum, 2)"
             :key="item"
             :style="bgCellStyle(cellRowCol(item))">
           </div>
@@ -27,11 +27,13 @@
           <div
             class="cell"
             v-for="item in cells"
+            :ref="`game-cell-${item.id}`"
             :key="item.id"
             :style="cellStyle(cellRowCol(item.cell), item.level)">
             <!-- 方块内是文字 -->
-            <template v-if="currentLevelSetting[item.level].text">
-              {{currentLevelSetting[item.level].text}}
+            <template v-if="levelSetting[item.level - 1].text">
+              {{levelSetting[item.level - 1].text}}
+              <!-- {{item.cell}} -->
             </template>
           </div>
         </div>
@@ -51,6 +53,8 @@
 <script>
 import hotkeys from 'hotkeys-js'
 import _clonedeep from 'lodash.clonedeep'
+import _difference from 'lodash.difference'
+import _random from 'lodash.random'
 export default {
   props: {
     // 几乘几的格子
@@ -62,55 +66,29 @@ export default {
     keyDown: {type: String, required: false, default: 'down'},
     keyLeft: {type: String, required: false, default: 'left'},
     keyRight: {type: String, required: false, default: 'right'},
+    // 等级设置
     levelSetting: {
       type: Array,
       required: false,
       default: () => [
-        {
-          text: '2',
-          bg: '#EEE4DA'
-        }, {
-          text: '4',
-          bg: '#EFE0CD'
-        }, {
-          text: '8',
-          bg: '#F2B17B'
-        }, {
-          text: '16',
-          bg: '#F69465'
-        }, {
-          text: '32',
-          bg: '#FE785C'
-        }, {
-          text: '64',
-          bg: '#FD5733'
-        }, {
-          text: '128',
-          bg: '#FFE564'
-        }, {
-          text: '256',
-          bg: '#FFD24E'
-        }, {
-          text: '512',
-          bg: '#FFE19C'
-        }, {
-          text: '1024',
-          bg: '#FF934E'
-        }, {
-          text: '2048',
-          bg: '#FF2D00'
-        }
+        {text: '2', bg: '#EEE4DA'},
+        {text: '4', bg: '#EFE0CD'},
+        {text: '8', bg: '#F2B17B'},
+        {text: '16', bg: '#F69465'},
+        {text: '32', bg: '#FE785C'},
+        {text: '64', bg: '#FD5733'},
+        {text: '128', bg: '#FFE564'},
+        {text: '256', bg: '#FFD24E'},
+        {text: '512', bg: '#FFE19C'},
+        {text: '1024', bg: '#FF934E'},
+        {text: '2048', bg: '#FF2D00'}
       ]
-    }
+    },
+    // 游戏设置 在游戏开始的时候有多少个方块
+    gameStartCellNum: {type: Number, required: false, default: 2}
   },
   data () {
     return {
-      // [从参数获得] 几乘几的格子
-      currentCellNum: 0,
-      // [从参数获得] 格子间距
-      currentCellMargin: 0,
-      // [从参数获得] 等级设置
-      currentLevelSetting: [],
       // [计算获得] 格子尺寸
       cellWidth: 0,
       // [mounted后取值] 棋盘尺寸
@@ -121,7 +99,9 @@ export default {
       isPressLeft: false,
       isPressRight: false,
       // game 层的方块
-      cells: []
+      cells: [],
+      // 记录产生了多少个cell
+      cellCount: 0
     }
   },
   mounted () {
@@ -133,23 +113,31 @@ export default {
       return {
         height: `${this.boardWidth}px`
       }
+    },
+    // 当前 cells 的 grid 形式
+    cellsGrid () {
+      const row = Array(this.cellNum).fill(0)
+      let grid = [...Array(this.cellNum)].map(e => _clonedeep(row))
+      this.cells.forEach(cell => {
+        const {x, y} = this.cellRowCol(cell.cell)
+        grid[x][y] = _clonedeep(cell)
+      })
+      return grid
     }
   },
   methods: {
     // 初始化
     init () {
-      // 获取用户设置
-      this.currentCellNum = this.cellNum
-      this.currentCellMargin = this.cellMargin
-      this.currentLevelSetting = _clonedeep(this.levelSetting)
       // 获取尺寸
       this.boardWidth = this.$refs.board.offsetWidth
       // 计算尺寸
-      this.cellWidth = (this.boardWidth - this.currentCellMargin * (this.currentCellNum + 1)) / this.currentCellNum
+      this.cellWidth = (this.boardWidth - this.cellMargin * (this.cellNum + 1)) / this.cellNum
       // 注册按键
       this.keyRegister()
-      // 生成第一个方块
-      this.newCell()
+      // 根据设置生成初始的cell
+      for (let i = 0; i < this.gameStartCellNum; i++) {
+        this.newCell()
+      }
     },
     // 注册按键
     keyRegister () {
@@ -173,71 +161,242 @@ export default {
     // 输入 index 输出 这个index对应的x和y
     cellRowCol (index) {
       return {
-        x: (index - 1) % this.currentCellNum,
-        y: parseInt((index - 1) / this.currentCellNum)
+        // 行
+        x: parseInt((index - 1) / this.cellNum),
+        // 列
+        y: (index - 1) % this.cellNum
       }
     },
     // [背景层cell] 输入 x和y 返回这个位置的样式
     bgCellStyle ({x, y}) {
-      return {
-        width: `${this.cellWidth}px`,
-        height: `${this.cellWidth}px`,
-        left: `${this.currentCellMargin + x * (this.cellWidth + this.currentCellMargin)}px`,
-        top: `${this.currentCellMargin + y * (this.cellWidth + this.currentCellMargin)}px`
-      }
+      return this.xy2style(x, y)
     },
     // [游戏层cell] 输入 x和y 返回这个位置的样式
     cellStyle ({x, y}, level) {
       return {
-        width: `${this.cellWidth}px`,
-        height: `${this.cellWidth}px`,
-        left: `${this.currentCellMargin + x * (this.cellWidth + this.currentCellMargin)}px`,
-        top: `${this.currentCellMargin + y * (this.cellWidth + this.currentCellMargin)}px`,
-        backgroundColor: this.currentLevelSetting[level].bg
+        ...this.xy2style(x, y),
+        backgroundColor: this.levelSetting[level - 1].bg
       }
     },
-    // 生成一个方块
+    // [背景层cell] 为 bgCellStyle 和 cellStyle 提供基础样式，根据传入的行列数据返回位置数据
+    xy2style (x, y) {
+      return {
+        width: `${this.cellWidth}px`,
+        height: `${this.cellWidth}px`,
+        left: `${this.cellMargin + y * (this.cellWidth + this.cellMargin)}px`,
+        top: `${this.cellMargin + x * (this.cellWidth + this.cellMargin)}px`
+      }
+    },
+    // 生成一个方块 生成的方块暂时只能是2 (等级是1)
     newCell () {
-      this.cells.push({
-        // 位置
-        cell: 2,
-        // 唯一ID
-        id: 0,
-        // 等级
-        level: 0
+      console.group('newCell')
+      const useful = _difference([...Array(Math.pow(this.cellNum, 2))].map((e, i) => i + 1), this.cells.map(e => e.cell))
+      const cell = {
+        cell: useful[_random(useful.length - 1)], // 位置
+        id: this.cellCount++, // 唯一ID
+        level: 1 // 等级
+      }
+      this.cells.push(cell)
+      this.logCell(cell, 'add a new cell')
+      this.logCellGrid()
+      console.groupEnd()
+    },
+    // [移动检查] 检查是否可以向上移动
+    canMoveUp () {
+      return new Promise((resolve, reject) => {
+        // 打印矩阵
+        this.logCellGrid()
+        // 找符合要求的节点
+        // 第一行省略
+        for (let row = 1; row < this.cellNum; row++) {
+          for (let col = 0; col < this.cellNum; col++) {
+            // 首先这个 cell 不可以是 0, 因为要找的是有值的格子
+            if (this.cellsGrid[row][col] !== 0) {
+              // 以下情况符合
+              // 这个格子上面的格子是空的
+              // 这个格子上面的格子和这个格子是一样的
+              if (this.cellsGrid[row - 1][col] === 0) {
+                this.logCell(this.cellsGrid[row][col], 'this cell can move up ，because the upper position of it is empty :')
+                return resolve()
+              } else if (this.cellsGrid[row - 1][col].level === this.cellsGrid[row][col].level) {
+                this.logCell(this.cellsGrid[row][col], 'this cell can move up , because the value in its upper position is the same as itself :')
+                return resolve()
+              }
+            }
+          }
+        }
+        return reject(new Error('no cell can move up !'))
+      })
+    },
+    // [移动检查] 检查是否可以向下移动
+    canMoveDown () {
+      return new Promise((resolve, reject) => {
+        // 打印矩阵
+        this.logCellGrid()
+        // 找符合要求的节点
+        // 省略最下面一行
+        for (let row = 0; row < this.cellNum - 1; row++) {
+          for (let col = 0; col < this.cellNum; col++) {
+            // 首先这个 cell 不可以是 0, 因为要找的是有值的格子
+            if (this.cellsGrid[row][col] !== 0) {
+              // 以下情况符合
+              // 这个格子下面的格子是空的
+              // 这个格子下面的格子和这个格子是一样的
+              if (this.cellsGrid[row + 1][col] === 0) {
+                this.logCell(this.cellsGrid[row][col], 'this cell can move down ，because the lower position of it is empty :')
+                return resolve()
+              } else if (this.cellsGrid[row + 1][col].level === this.cellsGrid[row][col].level) {
+                this.logCell(this.cellsGrid[row][col], 'this cell can move down , because the value in its lower position is the same as itself :')
+                return resolve()
+              }
+            }
+          }
+        }
+        return reject(new Error('no cell can move down !'))
+      })
+    },
+    // [移动检查] 检查是否可以向左移动
+    canMoveLeft () {
+      return new Promise((resolve, reject) => {
+        // 打印矩阵
+        this.logCellGrid()
+        // 找符合要求的节点
+        // 省略最左边一列
+        for (let row = 0; row < this.cellNum; row++) {
+          for (let col = 1; col < this.cellNum; col++) {
+            // 首先这个 cell 不可以是 0, 因为要找的是有值的格子
+            if (this.cellsGrid[row][col] !== 0) {
+              // 以下情况符合
+              // 这个格子左面的格子是空的
+              // 这个格子左面的格子和这个格子是一样的
+              if (this.cellsGrid[row][col - 1] === 0) {
+                this.logCell(this.cellsGrid[row][col], 'this cell can move left ，because the left side position of it is empty :')
+                return resolve()
+              } else if (this.cellsGrid[row][col - 1].level === this.cellsGrid[row][col].level) {
+                this.logCell(this.cellsGrid[row][col], 'this cell can move left , because the value in its left side position is the same as itself :')
+                return resolve()
+              }
+            }
+          }
+        }
+        return reject(new Error('no cell can move left !'))
+      })
+    },
+    // [移动检查] 检查是否可以向右移动
+    canMoveRight () {
+      return new Promise((resolve, reject) => {
+        // 打印矩阵
+        this.logCellGrid()
+        // 找符合要求的节点
+        // 省略最右边一列
+        for (let row = 0; row < this.cellNum; row++) {
+          for (let col = 0; col < this.cellNum - 1; col++) {
+            // 首先这个 cell 不可以是 0, 因为要找的是有值的格子
+            if (this.cellsGrid[row][col] !== 0) {
+              // 以下情况符合
+              // 这个格子右面的格子是空的
+              // 这个格子右面的格子和这个格子是一样的
+              if (this.cellsGrid[row][col + 1] === 0) {
+                this.logCell(this.cellsGrid[row][col], 'this cell can move right ，because the right side position of it is empty :')
+                return resolve()
+              } else if (this.cellsGrid[row][col + 1].level === this.cellsGrid[row][col].level) {
+                this.logCell(this.cellsGrid[row][col], 'this cell can move right , because the value in its right side position is the same as itself :')
+                return resolve()
+              }
+            }
+          }
+        }
+        return reject(new Error('no cell can move right !'))
       })
     },
     // [上] 不管是触摸 还是按键 还是点击 最后触发的都是这里的方法
     pressUp () {
-      console.log('pressUp')
+      this.logKey('pressUp')
+      // 点亮下面的指示灯 并隔一段时间后熄灭
       this.isPressUp = true
       setTimeout(() => {
         this.isPressUp = false
       }, 100)
+      this.canMoveUp()
+        .then(() => {
+          console.log('can')
+        })
+        .catch(err => {
+          console.warn(err)
+        })
     },
     // [下] 不管是触摸 还是按键 还是点击 最后触发的都是这里的方法
     pressDown () {
-      console.log('pressDown')
+      this.logKey('pressDown')
+      // 点亮下面的指示灯 并隔一段时间后熄灭
       this.isPressDown = true
       setTimeout(() => {
         this.isPressDown = false
       }, 100)
+      this.canMoveDown()
+        .then(() => {
+          console.log('can')
+        })
+        .catch(err => {
+          console.warn(err)
+        })
     },
     // [左] 不管是触摸 还是按键 还是点击 最后触发的都是这里的方法
     pressLeft () {
-      console.log('pressLeft')
+      this.logKey('pressLeft')
+      // 点亮下面的指示灯 并隔一段时间后熄灭
       this.isPressLeft = true
       setTimeout(() => {
         this.isPressLeft = false
       }, 100)
+      this.canMoveLeft()
+        .then(() => {
+          console.log('can')
+        })
+        .catch(err => {
+          console.warn(err)
+        })
     },
     // [右] 不管是触摸 还是按键 还是点击 最后触发的都是这里的方法
     pressRight () {
-      console.log('pressRight')
+      this.logKey('pressRight')
+      // 点亮下面的指示灯 并隔一段时间后熄灭
       this.isPressRight = true
       setTimeout(() => {
         this.isPressRight = false
       }, 100)
+      this.canMoveRight()
+        .then(() => {
+          console.log('can')
+        })
+        .catch(err => {
+          console.warn(err)
+        })
+    },
+    // [调试] 打印一个黑色的块 主要是用来显示进行了哪种操作
+    logKey (text) {
+      console.log(`%c${text}`, 'font-size: 20px; font-weight: bold; padding: 10px; background-color: #333; border-radius: 4px; color: #FFF;')
+    },
+    // [调试] 打印矩阵
+    logCellGrid (title = 'now cellsGrid is :') {
+      console.group(title)
+      console.log('|', Array(this.cellNum).fill('-').join('---'), '|')
+      this.cellsGrid.forEach(row => {
+        console.log('|', row.map(e => e.level ? e.level : e).join('   '), '|')
+        console.log('|', Array(this.cellNum).fill('-').join('---'), '|')
+      })
+      console.groupEnd()
+    },
+    // [调试] 打印单个 cell
+    logCell (cell, title) {
+      console.group(title)
+      console.table([_clonedeep(cell)])
+      const el = this.$refs[`game-cell-${cell.id}`]
+      if (el) {
+        console.log('the cell in document is :')
+        console.log(el[0])
+      }
+      console.groupEnd()
     }
   }
 }
