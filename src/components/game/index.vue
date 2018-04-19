@@ -51,43 +51,14 @@
 <script>
 import _clonedeep from 'lodash.clonedeep'
 
-// import _style from './_style'
+import _props from './_props'
+import _style from './_style'
 
 export default {
   mixins: [
-    () => import('./_style')
+    _props,
+    _style
   ],
-  props: {
-    // 几乘几的格子
-    cellNum: {type: Number, required: false, default: 4},
-    // 格子之间的间距
-    cellMargin: {type: Number, required: false, default: 6},
-    // 按键
-    keyUp: {type: String, required: false, default: 'up'},
-    keyDown: {type: String, required: false, default: 'down'},
-    keyLeft: {type: String, required: false, default: 'left'},
-    keyRight: {type: String, required: false, default: 'right'},
-    // 等级设置
-    levelSetting: {
-      type: Array,
-      required: false,
-      default: () => [
-        {text: '2', bg: '#EEE4DA'},
-        {text: '4', bg: '#EFE0CD'},
-        {text: '8', bg: '#F2B17B'},
-        {text: '16', bg: '#F69465'},
-        {text: '32', bg: '#FE785C'},
-        {text: '64', bg: '#FD5733'},
-        {text: '128', bg: '#FFE564'},
-        {text: '256', bg: '#FFD24E'},
-        {text: '512', bg: '#FFE19C'},
-        {text: '1024', bg: '#FF934E'},
-        {text: '2048', bg: '#FF2D00'}
-      ]
-    },
-    // 游戏设置 在游戏开始的时候有多少个方块
-    gameStartCellNum: {type: Number, required: false, default: 2}
-  },
   data () {
     return {
       // [计算获得] 格子尺寸
