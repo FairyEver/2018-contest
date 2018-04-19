@@ -7,6 +7,15 @@ export default {
     keyLeft: {type: String, required: false, default: 'left'},
     keyRight: {type: String, required: false, default: 'right'}
   },
+  data () {
+    return {
+      // 记录刚才用户的输入
+      isUp: false,
+      isDown: false,
+      isLeft: false,
+      isRight: false
+    }
+  },
   methods: {
     // 注册按键
     keyRegister () {
