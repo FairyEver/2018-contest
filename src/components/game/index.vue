@@ -53,26 +53,7 @@
 <script>
 import _clonedeep from 'lodash.clonedeep'
 
-import log from './_log'
-import transform from './_transform'
-import cellStyle from './_cellStyle'
-import canMove from './_canMove'
-import cell from './_cell'
-import handler from './_handler'
-import key from './_key'
-import tools from './_tools'
-
 export default {
-  mixins: [
-    log,
-    transform,
-    cellStyle,
-    canMove,
-    cell,
-    handler,
-    key,
-    tools
-  ],
   props: {
     // 几乘几的格子
     cellNum: {type: Number, required: false, default: 4},
@@ -158,8 +139,8 @@ export default {
       //   this.newCell()
       // }
       // this.newCell(1)
-      this.newCell(1)
-      this.newCell(2)
+      // this.newCell(1)
+      // this.newCell(2)
     }
   }
 }
