@@ -52,29 +52,7 @@
 const req = require.context('./mixins', false, /\.js$/)
 const mixins = req.keys().map(req).map(e => e.default)
 export default {
-  mixins,
-  data () {
-    return {
-      // [计算获得] 格子尺寸
-      cellWidth: 0,
-      // [mounted后取值] 棋盘尺寸
-      boardWidth: 0,
-      // game 层的方块
-      cells: []
-    }
-  },
-  computed: {
-    // 当前 cells 的 grid 形式
-    cellsGrid () {
-      const row = Array(this.cellNum).fill(0)
-      let grid = [...Array(this.cellNum)].map(e => _clonedeep(row))
-      this.cells.forEach(cell => {
-        const {x, y} = this.cell2xy(cell.cell)
-        grid[x][y] = _clonedeep(cell)
-      })
-      return grid
-    }
-  }
+  mixins
 }
 </script>
 
