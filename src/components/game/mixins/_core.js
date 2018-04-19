@@ -1,5 +1,3 @@
-import _clonedeep from 'lodash.clonedeep'
-
 export default {
   data () {
     return {
@@ -7,18 +5,6 @@ export default {
       cellWidth: 0,
       // [mounted后取值] 棋盘尺寸
       boardWidth: 0
-    }
-  },
-  computed: {
-    // 当前 cells 的 grid 形式
-    cellsGrid () {
-      const row = Array(this.cellNum).fill(0)
-      let grid = [...Array(this.cellNum)].map(e => _clonedeep(row))
-      this.cells.forEach(cell => {
-        const {x, y} = this.cell2xy(cell.cell)
-        grid[x][y] = _clonedeep(cell)
-      })
-      return grid
     }
   },
   mounted () {
@@ -33,11 +19,12 @@ export default {
       this.cellWidth = (this.boardWidth - this.cellMargin * (this.cellNum + 1)) / this.cellNum
       // 注册按键
       this.keyRegister()
+      // 初始化一个空的 cellsGrid
+      this.cellsGridInit()
       // 开始游戏
-      this.gameStart()
-      // this.cellCreat(1)
-      // this.cellCreat(1)
-      // this.cellCreat(2)
+      // this.gameStart()
+      this.cellCreat(1)
+      this.cellCreat(2)
     },
     gameStart () {
       // 根据设置生成初始的cell
