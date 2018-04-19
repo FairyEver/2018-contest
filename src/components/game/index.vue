@@ -19,7 +19,7 @@
             class="cell"
             v-for="item in Math.pow(cellNum, 2)"
             :key="item"
-            :style="bgCellStyle(cellRowCol(item))">
+            :style="bgCellStyle(cell2xy(item))">
           </div>
         </div>
         <!-- 游戏层 -->
@@ -29,10 +29,10 @@
             v-for="item in cells"
             :ref="`game-cell-${item.id}`"
             :key="item.id"
-            :style="cellStyle(cellRowCol(item.cell), item.level)">
+            :style="cellStyle(cell2xy(item.cell), item.level)">
             <!-- 方块内是文字 -->
             <template v-if="levelSetting[item.level - 1].text">
-              {{levelSetting[item.level - 1].text}}
+              {{levelSetting[item.level - 1].text}} {{item.id}}
               <!-- {{item.cell}} -->
             </template>
           </div>
@@ -55,6 +55,8 @@ import hotkeys from 'hotkeys-js'
 import _clonedeep from 'lodash.clonedeep'
 import _difference from 'lodash.difference'
 import _random from 'lodash.random'
+import _get from 'lodash.get'
+import _remove from 'lodash.remove'
 export default {
   props: {
     // 几乘几的格子
@@ -101,7 +103,9 @@ export default {
       // game 层的方块
       cells: [],
       // 记录产生了多少个cell
-      cellCount: 0
+      cellCount: 0,
+      // 存放一次操作后，发生了变化的位置
+      roundChanged: []
     }
   },
   mounted () {
@@ -119,7 +123,7 @@ export default {
       const row = Array(this.cellNum).fill(0)
       let grid = [...Array(this.cellNum)].map(e => _clonedeep(row))
       this.cells.forEach(cell => {
-        const {x, y} = this.cellRowCol(cell.cell)
+        const {x, y} = this.cell2xy(cell.cell)
         grid[x][y] = _clonedeep(cell)
       })
       return grid
@@ -135,9 +139,12 @@ export default {
       // 注册按键
       this.keyRegister()
       // 根据设置生成初始的cell
-      for (let i = 0; i < this.gameStartCellNum; i++) {
-        this.newCell()
-      }
+      // for (let i = 0; i < this.gameStartCellNum; i++) {
+      //   this.newCell()
+      // }
+      // this.newCell(1)
+      this.newCell(1)
+      this.newCell(2)
     },
     // 注册按键
     keyRegister () {
@@ -159,13 +166,17 @@ export default {
       })
     },
     // 输入 index 输出 这个index对应的x和y
-    cellRowCol (index) {
+    cell2xy (index) {
       return {
         // 行
         x: parseInt((index - 1) / this.cellNum),
         // 列
         y: (index - 1) % this.cellNum
       }
+    },
+    // 输入 x和y 输出 对应的index
+    xy2cell (x, y) {
+      return this.cellNum * x + y + 1
     },
     // [背景层cell] 输入 x和y 返回这个位置的样式
     bgCellStyle ({x, y}) {
@@ -188,16 +199,54 @@ export default {
       }
     },
     // 生成一个方块 生成的方块暂时只能是2 (等级是1)
-    newCell () {
+    newCell (index) {
       console.group('newCell')
       const useful = _difference([...Array(Math.pow(this.cellNum, 2))].map((e, i) => i + 1), this.cells.map(e => e.cell))
       const cell = {
-        cell: useful[_random(useful.length - 1)], // 位置
+        cell: index || useful[_random(useful.length - 1)], // 位置
         id: this.cellCount++, // 唯一ID
         level: 1 // 等级
       }
       this.cells.push(cell)
       this.logCell(cell, 'add a new cell')
+      this.logCellGrid()
+      console.groupEnd()
+    },
+    // 移动一个 cell
+    moveCell (row, col, _row, _col) {
+      console.group('moveCell 移动 cell')
+      const cell = this.xy2cell(row, col)
+      const to = this.xy2cell(_row, _col)
+      console.log(`要把位置为[${row},${col}]处的 cell 移动到[${_row},${_col}]`)
+      console.log('另一种表示为')
+      console.log(`要把位置为 ${cell} 处的 cell 移动到 ${to}`)
+      const index = this.cells.findIndex(e => e.cell === cell)
+      console.log(`${cell} 处的 cell 在 cells 中找到了 index = ${index}`)
+      if (index >= 0) {
+        this.cells[index].cell = to
+        this.logCell(this.cells[index], `移动完成 现在 ${col} 处的 cell 为`)
+      }
+      this.logCellGrid()
+      console.groupEnd()
+    },
+    // 给一个 cell level + 1
+    sumCell (row, col) {
+      console.group('sumCell 升级 cell')
+      const cell = this.xy2cell(row, col)
+      const index = this.cells.findIndex(e => e.cell === cell)
+      if (index >= 0) {
+        this.cells[index].level += 1
+        console.log(`现在[${row},${col}]位置的 cell 级别为 ${this.cells[index].level}`)
+      }
+      this.logCellGrid()
+      console.groupEnd()
+    },
+    // 移除一个 cell
+    removeCell (row, col) {
+      console.group('removeCell 删除一个 cell')
+      const cell = this.xy2cell(row, col)
+      _remove(this.cells, e => e.cell === cell)
+      console.log(`已经删除在[${row},${col}]位置的 cell`)
       this.logCellGrid()
       console.groupEnd()
     },
@@ -309,6 +358,19 @@ export default {
         return reject(new Error('no cell can move right !'))
       })
     },
+    // [障碍物检查] 横向
+    unobstructedRow (row, col, _col) {
+      for (let __col = _col + 1; __col < col; __col++) {
+        if (this.cellsGrid[row][__col] !== 0) {
+          return false
+        }
+      }
+      return true
+    },
+    // [障碍物检查] 纵向
+    unobstructedCol () {
+      return true
+    },
     // [上] 不管是触摸 还是按键 还是点击 最后触发的都是这里的方法
     handlerUp () {
       this.logKey('handlerUp')
@@ -347,7 +409,36 @@ export default {
       }, 100)
       this.canMoveLeft()
         .then(() => {
-          console.log('can')
+          // 向左移动
+          // 判断一个位置是否可以成为目的位置的标准
+          // 1 这个位置应该是空的
+          // 2 这个位置或者和移动的元素一样
+          // 3 之间不能有东西
+          // 清空 roundChanged
+          this.resetRoundChanged()
+          for (let row = 0; row < this.cellNum; row++) {
+            for (let col = 1; col < this.cellNum; col++) {
+              // 找到一个非空位置
+              if (this.cellsGrid[row][col] !== 0) {
+                // 找这个位置左侧的位置
+                for (let _col = 0; _col < col; _col++) {
+                  // 通过的情况 1 这个位置为0 并且没有障碍物
+                  // 通过的情况 2 这个位置和移动的对象一样 并且没有障碍物
+                  if (this.cellsGrid[row][_col] === 0 && this.unobstructedRow(row, col, _col)) {
+                    this.moveCell(row, col, row, _col)
+                    continue
+                  } else if (_get(this.cellsGrid[row][_col], 'level', 'new') === _get(this.cellsGrid[row][_col], 'level', 'old') && this.unobstructedRow(row, col, _col)) {
+                    this.removeCell(row, _col)
+                    this.moveCell(row, col, row, _col)
+                    this.sumCell(row, _col)
+                    continue
+                  }
+                }
+              }
+            }
+          }
+          // 添加一个 cell
+          this.newCell()
         })
         .catch(err => console.warn(err))
     },
@@ -365,6 +456,11 @@ export default {
         })
         .catch(err => console.warn(err))
     },
+    // 将 roundChanged 清空
+    resetRoundChanged () {
+      const row = Array(this.cellNum).fill(0)
+      this.roundChanged = [...Array(this.cellNum)].map(e => _clonedeep(row))
+    },
     // [调试] 打印一个黑色的块 主要是用来显示进行了哪种操作
     logKey (text) {
       console.log(`%c${text}`, 'font-size: 20px; font-weight: bold; padding: 10px; background-color: #333; border-radius: 4px; color: #FFF;')
@@ -372,6 +468,9 @@ export default {
     // [调试] 打印矩阵
     logCellGrid (title = 'now cellsGrid is :') {
       console.group(title)
+      console.log(this.cells.map(e => e.cell).join(' - '))
+      console.log(this.cellsGrid)
+      // TODO 这里有问题 cellsGrid 没有及时更新
       console.log('|', Array(this.cellNum).fill('-').join('---'), '|')
       this.cellsGrid.forEach(row => {
         console.log('|', row.map(e => e.level ? e.level : e).join('   '), '|')
