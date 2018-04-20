@@ -11,7 +11,7 @@ export default {
       console.log(this.cells)
     },
     // [调试] 打印 cellsGrid
-    __printCellsGrid (title = 'now cellsGrid is :') {
+    __printCellsGrid (title = '现在的 cellsGrid :') {
       console.group(title)
       // TODO 这里有问题 cellsGrid 没有及时更新
       console.log('|', Array(this.cellNum).fill('-').join('-----'), '|')

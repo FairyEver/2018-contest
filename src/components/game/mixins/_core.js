@@ -23,9 +23,14 @@ export default {
       this.cellsGridInit()
       // 开始游戏
       // this.gameStart()
-      this.cellCreat(1)
-      this.cellCreat(2)
+      this.cellCreat({
+        position: 1
+      })
+      this.cellCreat({
+        position: 2
+      })
     },
+    // 开始游戏
     gameStart () {
       // 根据设置生成初始的cell
       for (let i = 0; i < this.gameStartCellNum; i++) {
