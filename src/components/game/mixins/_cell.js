@@ -43,16 +43,17 @@ export default {
       const row = Array(this.cellNum).fill(0)
       this.cellsGrid = [...Array(this.cellNum)].map(e => _clonedeep(row))
       // 打印
-      this.__printCellsGrid()
+      this.__printCellsGrid('初始化后')
     },
     // 更新 cellsGrid => cells
-    cellsGridFlat () {
-      const cells = [].concat(...this.cellsGrid).map((e, index) => ({
+    updateView () {
+      this.cells = [].concat(...this.cellsGrid).map((e, index) => ({
         position: index + 1,
         id: e.id,
         level: e.level
       })).filter(e => e.level)
-      console.log(cells)
+      // 打印
+      this.__printCells()
     }
   }
 }

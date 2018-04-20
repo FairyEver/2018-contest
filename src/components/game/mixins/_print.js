@@ -7,12 +7,18 @@ export default {
       console.log(`%c${text}`, 'font-size: 20px; font-weight: bold; padding: 10px; background-color: #333; border-radius: 4px; color: #FFF;')
     },
     // [调试] 打印 cells
-    __printCells () {
-      console.log(this.cells)
+    __printCells (title = '现在') {
+      console.group(`cells [${title}]`)
+      console.table(this.cells.map(e => ({
+        position: e.position,
+        id: e.id,
+        level: e.level
+      })))
+      console.groupEnd()
     },
     // [调试] 打印 cellsGrid
-    __printCellsGrid (title = '现在的 cellsGrid :') {
-      console.group(title)
+    __printCellsGrid (title = '现在') {
+      console.group(`cellsGrid [${title}]`)
       // TODO 这里有问题 cellsGrid 没有及时更新
       console.log('|', Array(this.cellNum).fill('-').join('-----'), '|')
       this.cellsGrid.forEach(row => {
