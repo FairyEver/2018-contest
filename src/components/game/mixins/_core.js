@@ -29,6 +29,7 @@ export default {
       this.cellCreat({
         position: 2
       })
+      // 更新视图
       this.updateView()
     },
     // 开始游戏
@@ -37,6 +38,10 @@ export default {
       for (let i = 0; i < this.gameStartCellNum; i++) {
         this.cellCreat()
       }
+    },
+    // 游戏结束
+    gameOver () {
+      alert('Game Over')
     }
   }
 }

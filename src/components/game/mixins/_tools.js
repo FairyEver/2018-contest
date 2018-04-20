@@ -14,6 +14,15 @@ export default {
     // xy都是从0开始 左上角是[0,0]
     xy2n (x, y) {
       return this.cellNum * x + y + 1
+    },
+    // [障碍物检查] 横向
+    unobstructedRow (row, col, _col) {
+      for (let __col = _col + 1; __col < col; __col++) {
+        if (this.cellsGrid[row][__col] !== 0) {
+          return false
+        }
+      }
+      return true
     }
   }
 }

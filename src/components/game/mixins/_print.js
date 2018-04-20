@@ -1,10 +1,20 @@
-// import _clonedeep from 'lodash.clonedeep'
+import _clonedeep from 'lodash.clonedeep'
 
 export default {
   methods: {
     // [调试] 打印一个黑色的块 主要是用来显示进行了哪种操作
-    logKey (text) {
+    printKey (text) {
       console.log(`%c${text}`, 'font-size: 20px; font-weight: bold; padding: 10px; background-color: #333; border-radius: 4px; color: #FFF;')
+    },
+    __printCell (cell, title) {
+      console.group(`cell [${title}]`)
+      console.table([_clonedeep(cell)])
+      const el = this.$refs[`game-cell-${cell.id}`]
+      if (el) {
+        console.log('the cell in document is :')
+        console.log(el[0])
+      }
+      console.groupEnd()
     },
     // [调试] 打印 cells
     __printCells (title = '现在') {
