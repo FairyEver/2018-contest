@@ -23,18 +23,18 @@
           </div>
         </div>
         <!-- 游戏层 -->
-        <!-- <div class="layer game">
+        <div class="layer game">
           <div
             class="cell"
             v-for="item in cells"
             :ref="`game-cell-${item.id}`"
             :key="item.id"
-            :style="cellStyle(cell2xy(item.cell), item.level)">
+            :style="styleCellInGameLayer(n2xy(item.position), item.level)">
             <template v-if="levelSetting[item.level - 1].text">
               {{levelSetting[item.level - 1].text}} {{item.id}}
             </template>
           </div>
-        </div> -->
+        </div>
       </div>
     </div>
     <div class="footer">
