@@ -29,6 +29,7 @@ export default {
       this.cellCreat({
         position: 2
       })
+      this.cellsGridFlat()
     },
     // 开始游戏
     gameStart () {

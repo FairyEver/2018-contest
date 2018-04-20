@@ -8,7 +8,9 @@ export default {
       // cell 数据 二维数组表示
       // cells 由 cellsGrid 得到
       // 上面的过程不可逆向
-      cellsGrid: []
+      cellsGrid: [],
+      // 产生一个 cell 就累加1
+      cellId: 0
     }
   },
   methods: {
@@ -30,7 +32,8 @@ export default {
       const {x, y} = this.n2xy(_position)
       // 设置 cellsGrid
       this.cellsGrid[x][y] = {
-        level: level
+        level: level,
+        id: this.cellId++
       }
       // 打印
       this.__printCellsGrid()
@@ -44,13 +47,12 @@ export default {
     },
     // 更新 cellsGrid => cells
     cellsGridFlat () {
-      // const row = Array(this.cellNum).fill(0)
-      // let grid = [...Array(this.cellNum)].map(e => _clonedeep(row))
-      // this.cells.forEach(cell => {
-      //   const {x, y} = this.cell2xy(cell.cell)
-      //   grid[x][y] = _clonedeep(cell)
-      // })
-      // return grid
+      const cells = [].concat(...this.cellsGrid).map((e, index) => ({
+        position: index + 1,
+        id: e.id,
+        level: e.level
+      })).filter(e => e.level)
+      console.log(cells)
     }
   }
 }
