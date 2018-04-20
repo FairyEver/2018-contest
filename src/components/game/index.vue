@@ -31,7 +31,7 @@
             :key="item.id"
             :style="styleCellInGameLayer(n2xy(item.position), item.level)">
             <template v-if="levelSetting[item.level - 1].text">
-              {{levelSetting[item.level - 1].text}} {{item.id}}
+              {{levelSetting[item.level - 1].text}}
             </template>
           </div>
         </div>
