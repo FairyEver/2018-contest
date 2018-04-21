@@ -53,19 +53,21 @@ export default {
                 for (let _col = 0; _col < col; _col++) {
                   // 通过的情况 1 这个位置为0 并且没有障碍物
                   // 通过的情况 2 这个位置和移动的对象一样 并且没有障碍物
+                  // 需要移动的格子 [row][col]
+                  // 当前正在判断的格子 [row][_col]
                   if (this.cellsGrid[row][_col] === 0 && this.unobstructedRow(row, col, _col)) {
-                    // this.moveCell(row, col, row, _col)
+                    this.cellMove(row, col, row, _col)
                     continue
                   } else if (_get(this.cellsGrid[row][_col], 'level', 'new') === _get(this.cellsGrid[row][_col], 'level', 'old') && this.unobstructedRow(row, col, _col)) {
-                    // this.removeCell(row, _col)
-                    // this.moveCell(row, col, row, _col)
-                    // this.sumCell(row, _col)
+                    this.cellAdd(row, col, row, _col)
                     continue
                   }
                 }
               }
             }
           }
+          // 打印
+          this.__printCellsGrid('移动完成后')
           // 添加一个 cell
           this.cellCreat()
           // 更新视图

@@ -29,6 +29,14 @@ export default {
       this.cellCreat({
         position: 2
       })
+      this.cellCreat({
+        position: 3,
+        level: 2
+      })
+      this.cellCreat({
+        position: 4,
+        level: 3
+      })
       // 更新视图
       this.updateView()
     },

@@ -14,6 +14,21 @@ export default {
     }
   },
   methods: {
+    // 移动 cell
+    // 包含两步
+    // 第一步 复制 form => to
+    // 第二步 删除 from
+    cellMove (fromRow, fromCol, toRow, toCol) {
+      this.cellsGrid[toRow][toCol] = _clonedeep(this.cellsGrid[fromRow][fromCol])
+      this.cellsGrid[fromRow][fromCol] = 0
+    },
+    // 相加 cell
+    // 第一步 移动 cell1 => cell2
+    // 第二步 cell1 level +
+    cellAdd (cell1Row, cell1Col, cell2Row, cell2Col) {
+      this.cellMove(cell1Row, cell1Col, cell2Row, cell2Col)
+      this.cellsGrid[cell2Row][cell2Col].level += 1
+    },
     // 新建一个 cell
     cellCreat ({position = 0, level = 1} = {}) {
       // 得到现在所有还可以用的位置
