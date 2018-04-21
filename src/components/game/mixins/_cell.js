@@ -53,7 +53,7 @@ export default {
         level: e.level
       })).filter(e => e.level)
       // 打印
-      this.__printCells()
+      this.__printCells('视图已经更新')
     }
   }
 }
