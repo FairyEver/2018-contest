@@ -1,5 +1,32 @@
+import _get from 'lodash.get'
 export default {
   methods: {
+    // 接收 起始位置 目的位置 返回检测结果 false / empty / same
+    canMoveTo (fromRow, fromCol, toRow, toCol) {
+      // 通过的情况 1 这个位置为0 并且没有障碍物
+      // 通过的情况 2 这个位置和移动的对象一样 并且没有障碍物
+      // 先判断中间是否有间隔
+      // 间隔检查没有通过 直接返回失败
+      if (!this.unobstructed(fromRow, fromCol, toRow, toCol)) {
+        // 返回检测结果 不能移动
+        return false
+      }
+      // 间隔检查通过 进行下一步检查
+      if (this.cellsGrid[toRow][toCol] === 0) {
+        // 检测结果 '空'
+        return 'empty'
+      } else if (
+        // 两侧是否相等
+        _get(this.cellsGrid[fromRow][fromCol], 'level', 'new') === _get(this.cellsGrid[toRow][toCol], 'level', 'old') &&
+        // 目的位置是否发生过合并
+        this.cellsComputedGrid[toRow][toCol] !== 1) {
+        // 返回结果 '相同'
+        return 'same'
+      } else {
+        // 返回检测结果 不能移动
+        return false
+      }
+    },
     // [移动检查]
     // 只返回布尔值 不会返回具体的 cell
     // 检查是否可以向上移动

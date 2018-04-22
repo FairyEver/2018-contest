@@ -15,14 +15,31 @@ export default {
     xy2n (x, y) {
       return this.cellNum * x + y + 1
     },
-    // [障碍物检查] 横向
-    unobstructedRow (row, col, _col) {
-      for (let __col = _col + 1; __col < col; __col++) {
-        if (this.cellsGrid[row][__col] !== 0) {
-          return false
+    // [障碍物检查] 自动判断横竖
+    unobstructed (fromRow, fromCol, toRow, toCol) {
+      const unobstructedRow = (row, col, _col) => {
+        // 检验大小
+        const min = col < _col ? col : _col
+        const max = col < _col ? _col : col
+        for (let __col = min + 1; __col < max; __col++) {
+          if (this.cellsGrid[row][__col] !== 0) {
+            return false
+          }
         }
+        return true
       }
-      return true
+      const unobstructedCol = (col, row, _row) => {
+        // 检验大小
+        const min = row < _row ? row : _row
+        const max = row < _row ? _row : row
+        for (let __row = min + 1; __row < max; __row++) {
+          if (this.cellsGrid[__row][col] !== 0) {
+            return false
+          }
+        }
+        return true
+      }
+      return fromRow === toRow ? unobstructedRow(fromRow, fromCol, toCol) : unobstructedCol(fromCol, fromRow, toRow)
     }
   }
 }

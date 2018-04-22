@@ -19,8 +19,9 @@ export default {
       this.cellWidth = (this.boardWidth - this.cellMargin * (this.cellNum + 1)) / this.cellNum
       // 注册按键
       this.keyRegister()
-      // 初始化一个空的 cellsGrid
+      // 初始化
       this.cellsGridInit()
+      this.cellsComputedGridInit()
       // 开始游戏
       // this.gameStart()
       this.cellCreat({

@@ -10,7 +10,16 @@ export default {
       // 上面的过程不可逆向
       cellsGrid: [],
       // 产生一个 cell 就累加1
-      cellId: 0
+      cellId: 0,
+      // 保存本次操作中发生了叠加的格子
+      cellsComputedGrid: []
+    }
+  },
+  computed: {
+    // 始终返回一个和当前尺寸一致的二维数组 每一项是0
+    emptyGrid () {
+      const row = Array(this.cellNum).fill(0)
+      return [...Array(this.cellNum)].map(e => _clonedeep(row))
     }
   },
   methods: {
@@ -28,6 +37,7 @@ export default {
     cellAdd (cell1Row, cell1Col, cell2Row, cell2Col) {
       this.cellMove(cell1Row, cell1Col, cell2Row, cell2Col)
       this.cellsGrid[cell2Row][cell2Col].level += 1
+      this.cellsComputedGrid[cell2Row][cell2Col] = 1
     },
     // 新建一个 cell
     cellCreat ({position = 0, level = 1} = {}) {
@@ -55,10 +65,13 @@ export default {
     },
     // 初始化一个空的 cellsGrid
     cellsGridInit () {
-      const row = Array(this.cellNum).fill(0)
-      this.cellsGrid = [...Array(this.cellNum)].map(e => _clonedeep(row))
+      this.cellsGrid = _clonedeep(this.emptyGrid)
       // 打印
       this.__printCellsGrid('初始化后')
+    },
+    // 初始化一个空的 cellsComputedGrid
+    cellsComputedGridInit () {
+      this.cellsComputedGrid = _clonedeep(this.emptyGrid)
     },
     // 更新 cellsGrid => cells
     updateView () {

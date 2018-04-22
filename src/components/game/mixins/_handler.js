@@ -1,5 +1,3 @@
-import _get from 'lodash.get'
-
 export default {
   methods: {
     // [上] 不管是触摸 还是按键 还是点击 最后触发的都是这里的方法
@@ -41,24 +39,20 @@ export default {
       this.canMoveLeft()
         .then(() => {
           // 向左移动
-          // 判断一个位置是否可以成为目的位置的标准
-          // 1 这个位置应该是空的
-          // 2 这个位置或者和移动的元素一样
-          // 3 之间不能有东西
           for (let row = 0; row < this.cellNum; row++) {
+            // 从左侧开始向右找 忽略最左侧的一列
             for (let col = 1; col < this.cellNum; col++) {
               // 找到一个非空位置
               if (this.cellsGrid[row][col] !== 0) {
-                // 找这个位置左侧的位置
+                // 找这个位置左侧的位置 从左往右找 包括最左边的一列
                 for (let _col = 0; _col < col; _col++) {
-                  // 通过的情况 1 这个位置为0 并且没有障碍物
-                  // 通过的情况 2 这个位置和移动的对象一样 并且没有障碍物
                   // 需要移动的格子 [row][col]
                   // 当前正在判断的格子 [row][_col]
-                  if (this.cellsGrid[row][_col] === 0 && this.unobstructedRow(row, col, _col)) {
+                  const can = this.canMoveTo(row, col, row, _col)
+                  if (can === 'empty') {
                     this.cellMove(row, col, row, _col)
                     continue
-                  } else if (_get(this.cellsGrid[row][_col], 'level', 'new') === _get(this.cellsGrid[row][_col], 'level', 'old') && this.unobstructedRow(row, col, _col)) {
+                  } else if (can === 'same') {
                     this.cellAdd(row, col, row, _col)
                     continue
                   }
@@ -72,6 +66,8 @@ export default {
           this.cellCreat()
           // 更新视图
           this.updateView()
+          // 复位
+          this.cellsComputedGridInit()
         })
         .catch(err => console.warn(err))
     },
@@ -85,7 +81,36 @@ export default {
       }, 100)
       this.canMoveRight()
         .then(() => {
-          console.log('can')
+          // 向右移动
+          for (let row = 0; row < this.cellNum; row++) {
+            // 从右侧开始向左找 忽略最右侧的一列
+            for (let col = this.cellNum - 2; col >= 0; col--) {
+              // 找到一个非空位置
+              if (this.cellsGrid[row][col] !== 0) {
+                // 找这个位置右侧的位置 从右往左找 包括最右边的一列
+                for (let _col = this.cellNum - 1; _col > col; _col--) {
+                  // 需要移动的格子 [row][col]
+                  // 当前正在判断的格子 [row][_col]
+                  const can = this.canMoveTo(row, col, row, _col)
+                  if (can === 'empty') {
+                    this.cellMove(row, col, row, _col)
+                    continue
+                  } else if (can === 'same') {
+                    this.cellAdd(row, col, row, _col)
+                    continue
+                  }
+                }
+              }
+            }
+          }
+          // 打印
+          this.__printCellsGrid('移动完成后')
+          // 添加一个 cell
+          this.cellCreat()
+          // 更新视图
+          this.updateView()
+          // 复位
+          this.cellsComputedGridInit()
         })
         .catch(err => console.warn(err))
     }
