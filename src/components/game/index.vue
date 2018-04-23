@@ -39,10 +39,10 @@
     </div>
     <div class="footer">
       <div class="icon-group">
-        <!-- <i class="icon-circle-up" :class="{active: isUp}" @click="handlerUp"></i>
+        <i class="icon-circle-up" :class="{active: isUp}" @click="handlerUp"></i>
         <i class="icon-circle-down" :class="{active: isDown}" @click="handlerDown"></i>
         <i class="icon-circle-left" :class="{active: isLeft}" @click="handlerLeft"></i>
-        <i class="icon-circle-right" :class="{active: isRight}" @click="handlerRight"></i> -->
+        <i class="icon-circle-right" :class="{active: isRight}" @click="handlerRight"></i>
       </div>
     </div>
   </div>
